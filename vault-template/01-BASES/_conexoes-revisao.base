@@ -1,0 +1,18 @@
+filters: 'file.inFolder("_conexoes") && tipo == "conexoes"'
+properties:
+  pares-candidatos:
+    displayName: Pares
+  notas-analisadas:
+    displayName: Notas
+  modelo-llm:
+    displayName: LLM
+views:
+  - type: table
+    name: Relatórios de conexões
+    order:
+      - date
+      - file.name
+      - pares-candidatos
+      - notas-analisadas
+      - modelo-embedding
+      - modelo-llm

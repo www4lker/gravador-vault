@@ -1,0 +1,27 @@
+filters: "file.inFolder('00-INBOX')"
+properties:
+  llm-categoria-sugerida:
+    displayName: Categoria sugerida
+  manter-audio:
+    displayName: Manter áudio
+  marcador-final:
+    displayName: Marcador
+  duracao:
+    displayName: Duração
+  modelo:
+    displayName: Modelo
+  llm-qualidade-transcricao:
+    displayName: Qualidade
+views:
+  - type: table
+    name: Triagem
+    order:
+      - date
+      - file.name
+      - duracao
+      - marcador-final
+      - llm-categoria-sugerida
+      - llm-qualidade-transcricao
+      - categoria
+      - manter-audio
+      - modelo

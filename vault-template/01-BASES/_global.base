@@ -1,0 +1,29 @@
+filters:
+  and:
+    - 'file.hasTag("gravador")'
+    - '!file.inFolder("01-BASES")'
+properties:
+  llm-resumo:
+    displayName: Resumo
+  llm-palavras-chave:
+    displayName: Palavras-chave
+  marcador-final:
+    displayName: Marcador
+views:
+  - type: table
+    name: Todas as notas
+    order:
+      - date
+      - file.name
+      - categoria
+      - marcador-final
+      - llm-resumo
+      - llm-palavras-chave
+  - type: table
+    name: Sem categoria
+    filters: '!note["categoria"]'
+    order:
+      - date
+      - file.name
+      - llm-categoria-sugerida
+      - llm-resumo

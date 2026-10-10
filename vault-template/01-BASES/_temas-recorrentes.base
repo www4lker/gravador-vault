@@ -1,0 +1,13 @@
+filters: 'file.inFolder("_conexoes") && (tipo == "temas" || tipo == "rodada")'
+properties:
+  temas-candidatos:
+    displayName: Temas
+views:
+  - type: table
+    name: Relatórios de temas
+    order:
+      - date
+      - file.name
+      - tipo
+      - temas-candidatos
+      - notas-analisadas

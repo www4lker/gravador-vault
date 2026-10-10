@@ -1,0 +1,21 @@
+# Áudio — nunca versionar
+*.WAV
+*.wav
+*.mp3
+*.m4a
+*.ogg
+*.flac
+RECORD/
+
+# Configuração por máquina e caches
+.env
+.cache/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Metadados de gravadores/players
+*.LIB
+System Volume Information/

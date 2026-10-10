@@ -1,0 +1,14 @@
+filters:
+  and:
+    - 'file.hasTag("gravador")'
+    - '!file.inFolder("01-BASES")'
+    - '!file.inFolder("_conexoes")'
+    - '!note["conexoes-locais"]'
+views:
+  - type: table
+    name: Sem bloco de conexões
+    order:
+      - date
+      - file.name
+      - categoria
+      - llm-palavras-chave

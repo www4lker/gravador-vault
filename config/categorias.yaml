@@ -1,0 +1,204 @@
+# Taxonomia de registros e esquemas de análise por categoria.
+#
+# Este arquivo é a parte mais pessoal do sistema. As categorias abaixo são as
+# de quem construiu o repositório, incluídas como exemplo funcional. Edite,
+# apague e acrescente categorias à vontade: os scripts leem só este arquivo.
+#
+# Cada categoria tem:
+#   descricao   — uma linha, usada nos docs e no prompt da categoria de fallback
+#   callout     — tipo de callout Obsidian (tip, abstract, quote, note, info, example, question)
+#   instrucao   — o que pedir ao LLM, em linguagem direta
+#   campos      — esquema JSON que o LLM deve devolver (nome → exemplo/descrição)
+#   frontmatter — quais campos do JSON viram propriedades `llm-*` (além dos padrão)
+#   secoes      — como renderizar o callout, em ordem (campo, rotulo, tipo)
+#                 tipo: texto | lista | inline | dict | codigo
+#
+# Tokens especiais:
+#   {categorias}  — em `campos`, vira a lista "A|B|C" das categorias deste arquivo
+#   coesao        — adicionado automaticamente aos campos quando a transcrição
+#                   veio de um modelo em `modelos_rapidos`
+
+versao: 1
+
+# Categoria usada quando a nota não está em pasta de categoria nem tem `categoria:`.
+# Deve existir em `categorias`. É a pasta 00-INBOX do vault.
+fallback: INBOX
+
+# Modelos Whisper considerados "rápidos" (mais sujeitos a erro): o LLM é instruído
+# a avaliar a coesão do texto e o script adiciona um aviso quando ela é baixa.
+modelos_rapidos: [tiny, base, small]
+
+# Palavras de triagem ditas antes de parar a gravação (regra 4 do protocolo).
+marcadores_finais: [forte, raso, desenvolver]
+
+# Campos do JSON que viram propriedades do frontmatter em qualquer categoria.
+# Formato: campo_json: propriedade
+frontmatter_padrao:
+  palavras_chave: llm-palavras-chave
+  resumo: llm-resumo
+  resumo_fenomenologico: llm-resumo
+  instrucoes_para_si: llm-instrucoes-para-si
+  perguntas_abertas: llm-perguntas-abertas
+  categoria_sugerida: llm-categoria-sugerida
+
+# Seções renderizadas ao final de todo callout, se o campo existir.
+secoes_comuns:
+  - {campo: palavras_chave, rotulo: Palavras-chave, tipo: inline}
+  - {campo: perguntas_abertas, rotulo: Perguntas abertas, tipo: lista}
+  - {campo: instrucoes_para_si, rotulo: Instruções para si, tipo: lista}
+
+categorias:
+
+  INBOX:
+    descricao: Ainda não categorizado. Staging de tudo que acaba de ser transcrito.
+    callout: question
+    instrucao: >-
+      Esta gravação ainda não foi categorizada. Produza um resumo e sugira a
+      categoria mais adequada entre as listadas.
+    campos:
+      palavras_chave: ["..."]
+      resumo: "2–3 frases"
+      categoria_sugerida: "{categorias}"
+      instrucoes_para_si: ["ação ou lembrança identificada"]
+    secoes:
+      - {campo: resumo, rotulo: Resumo, tipo: texto}
+      - {campo: categoria_sugerida, rotulo: Categoria sugerida, tipo: codigo}
+
+  NO-ROLE:
+    descricao: Pensamento em trânsito — caminhada, bicicleta, trajeto.
+    callout: tip
+    instrucao: >-
+      Este é um registro de pensamento em trânsito (caminhada, bicicleta).
+      Extraia perguntas abertas e itens acionáveis.
+    campos:
+      palavras_chave: ["..."]
+      resumo: "2–3 frases"
+      perguntas_abertas: ["pergunta sem resposta no áudio"]
+      instrucoes_para_si: ["ação ou lembrança identificada"]
+    secoes:
+      - {campo: resumo, rotulo: Resumo, tipo: texto}
+
+  INSIGHTS-MEDITACAO:
+    descricao: Captura imediata pós-sessão de meditação, antes de abrir qualquer app.
+    callout: quote
+    instrucao: >-
+      Este é um registro pós-meditação. Priorize imagens, metáforas e estados
+      experienciais. Não reformule como argumento. O resumo deve preservar a
+      fenomenologia, não a lógica.
+    campos:
+      palavras_chave: ["..."]
+      resumo_fenomenologico: "2–3 frases experienciais"
+      imagens_e_metaforas: ["metáfora ou imagem 1"]
+      instrucoes_para_si: ["intenção ou ação identificada"]
+    secoes:
+      - {campo: resumo_fenomenologico, rotulo: Resumo fenomenológico, tipo: texto}
+      - {campo: imagens_e_metaforas, rotulo: Imagens e metáforas, tipo: lista}
+
+  LENDO-COMENTANDO:
+    descricao: Reações durante a leitura (modo A) ou leitura em voz alta + comentário (modo B).
+    callout: abstract
+    instrucao: >-
+      Modo A = reação bruta, impressões não estruturadas. Modo B = leitura em
+      voz alta seguida de pausa e comentário; geralmente alterna trechos mais
+      formais com comentários na primeira pessoa. Infira o modo pelo padrão
+      textual.
+    campos:
+      palavras_chave: ["..."]
+      resumo: "2–3 frases"
+      modo_inferido: "A|B|misto|indeterminado"
+      obras_mencionadas: ["título ou autor"]
+      instrucoes_para_si: ["..."]
+    frontmatter:
+      modo_inferido: llm-modo-inferido
+    secoes:
+      - {campo: resumo, rotulo: Resumo, tipo: texto}
+      - {campo: modo_inferido, rotulo: Modo inferido, tipo: codigo}
+      - {campo: obras_mencionadas, rotulo: Obras, tipo: inline}
+
+  RESENHAS:
+    descricao: Rascunho falado sobre uma obra — impressão, argumento, veredito.
+    callout: example
+    instrucao: >-
+      Esta é uma resenha falada. Mapeie a estrutura tripartite: impressão
+      inicial, argumento central, veredito.
+    campos:
+      palavras_chave: ["..."]
+      impressao_inicial: "1–2 frases"
+      argumento_central: "1–2 frases"
+      veredito: "1–2 frases"
+      obras_mencionadas: ["..."]
+    frontmatter:
+      argumento_central: llm-resumo
+    secoes:
+      - {campo: impressao_inicial, rotulo: Impressão inicial, tipo: texto}
+      - {campo: argumento_central, rotulo: Argumento central, tipo: texto}
+      - {campo: veredito, rotulo: Veredito, tipo: texto}
+      - {campo: obras_mencionadas, rotulo: Obras, tipo: inline}
+
+  PRE-TEXTO:
+    descricao: Teste falado de robustez de um argumento antes de escrever.
+    callout: abstract
+    instrucao: >-
+      Este é um teste de robustez argumentativa falado. Extraia a estrutura do
+      argumento com precisão.
+    campos:
+      palavras_chave: ["..."]
+      resumo: "2–3 frases"
+      estrutura_argumentativa:
+        premissa: "..."
+        tese: "..."
+        objecao_interna: "..."
+        veredito_provisorio: "..."
+      status_argumento: "hipotese|tese_consolidada|aberto|descartado"
+      perguntas_abertas: ["..."]
+      instrucoes_para_si: ["..."]
+    frontmatter:
+      status_argumento: llm-status-argumento
+    secoes:
+      - {campo: resumo, rotulo: Resumo, tipo: texto}
+      - campo: estrutura_argumentativa
+        rotulo: Estrutura argumentativa
+        tipo: dict
+        rotulos:
+          premissa: Premissa
+          tese: Tese
+          objecao_interna: Objeção interna
+          veredito_provisorio: Veredito provisório
+      - {campo: status_argumento, rotulo: Status, tipo: codigo}
+
+  ENTREVISTA:
+    descricao: Conversa com outra pessoa. Maior valor, maior risco, backup obrigatório.
+    callout: info
+    instrucao: >-
+      Esta é uma conversa com outro interlocutor. Infira turnos de fala com
+      base em marcadores contextuais ("você disse", "perguntei", mudanças de
+      perspectiva discursiva). Se nomes próprios de pessoas identificáveis
+      aparecerem, use [NOME].
+    campos:
+      palavras_chave: ["..."]
+      resumo: "2–3 frases"
+      turnos_inferidos:
+        - {turno: "autor", trecho: "..."}
+        - {turno: "interlocutor", trecho: "..."}
+        - {turno: "ambiguo", trecho: "..."}
+      citacoes_interlocutor: ["trecho atribuível ao interlocutor"]
+      instrucoes_para_si: ["..."]
+    secoes:
+      - {campo: resumo, rotulo: Resumo, tipo: texto}
+      - {campo: citacoes_interlocutor, rotulo: Falas do interlocutor, tipo: lista}
+
+  SONHEI-ESSA-NOITE:
+    descricao: Sonhos, gravados antes de se mover. Única exceção ao stamp de abertura.
+    callout: note
+    instrucao: >-
+      NÃO produza resumo nem interpretação. Preserve a fragmentação como dado
+      bruto. Liste apenas elementos: personagens, cenários, objetos, afetos.
+      Não conecte os fragmentos em narrativa.
+    campos:
+      palavras_chave: ["personagem", "cenário", "objeto", "afeto"]
+      fragmentos: ["trecho 1 preservado", "trecho 2 preservado"]
+      afetos_dominantes: ["afeto1", "afeto2"]
+    avaliar_coesao: false
+    secoes:
+      - {campo: fragmentos, rotulo: Fragmentos preservados, tipo: lista}
+      - {campo: afetos_dominantes, rotulo: Afetos dominantes, tipo: inline}

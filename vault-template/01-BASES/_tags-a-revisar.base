@@ -1,0 +1,15 @@
+filters:
+  and:
+    - 'file.hasTag("gravador")'
+    - '!file.inFolder("01-BASES")'
+properties:
+  llm-palavras-chave:
+    displayName: Palavras-chave (LLM)
+views:
+  - type: table
+    name: Tags x palavras-chave
+    order:
+      - file.name
+      - categoria
+      - file.tags
+      - llm-palavras-chave
